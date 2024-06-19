@@ -1,0 +1,48 @@
+name: widget_japanese
+description: "A widget flutter project"
+publish_to: 'none' # Remove this line if you wish to publish to pub.dev
+
+version: 1.0.0+1
+
+environment:
+  #  sdk: '>=3.2.3 <4.0.0'
+  sdk: '>=2.18.2 <3.0.0'
+
+dependencies:
+  flutter:
+    sdk: flutter
+
+#  google_mobile_ads: ^2.3.0
+  shared_preferences: ^2.0.13 # shared_preferences
+  sqflite: ^2.0.0+3
+  path: ^1.8.1
+  provider: 6.0.3
+
+  #  firebase_core: ^2.17.0
+  #  cloud_firestore: 4.0.5
+
+  cupertino_icons: ^1.0.2
+  supabase_flutter: ^2.5.1
+  flutter_dotenv: ^5.1.0
+  uuid: ^3.0.7
+  fluttertoast: ^8.0.8
+  change_app_package_name: ^1.1.0
+
+flutter_icons:
+  android: true
+  ios: true
+  image_path: "assets/icon/icon.png"
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+
+  flutter_lints: ^2.0.0
+
+flutter:
+#  assets:
+#    - assets/img/buffett.png
+#    - assets/img/guide.png
+#    - assets/img/guide2.png
+  uses-material-design: true
+  generate: true
