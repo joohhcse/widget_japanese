@@ -45,6 +45,9 @@ class HomeScreen extends StatelessWidget {
               },
               child: Text('Update Widget'),
             ),
+            // Expanded(
+            //     child: Text(),
+            // )
           ],
         ),
       ),
@@ -76,7 +79,7 @@ class WordProvider with ChangeNotifier {
   }
 
   void _startTimer() {
-    _timer = Timer.periodic(Duration(seconds: 3), (timer) {
+    _timer = Timer.periodic(Duration(seconds: 7), (timer) {
       _changeWord();
     });
   }
