@@ -15,7 +15,6 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  int _selectedOption = 0;
 
   @override
   void initState() {
@@ -27,7 +26,7 @@ class _HomeScreenState extends State<HomeScreen> {
     final provider = Provider.of<WordProvider>(context);
     return Scaffold(
       appBar: AppBar(
-        title: Text('일본어 외우기 - 히라가나 / 가타가나'),
+        title: Text('일본어 위젯'),
       ),
       body: Center(
         child: Column(
@@ -38,10 +37,6 @@ class _HomeScreenState extends State<HomeScreen> {
                 return Column(
                   children: [
                     Text(
-                      '${wordProvider.duration.inSeconds} ',
-                      style: TextStyle(fontSize: 24),
-                    ),
-                    Text(
                       wordProvider.currentWord,
                       style: TextStyle(fontSize: 48),
                     ),
@@ -50,16 +45,22 @@ class _HomeScreenState extends State<HomeScreen> {
               },
             ),
 
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Text(''),
+              ],
+            ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Text('Kana'),
+              ],
+            ),
             // Radio Option
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                // Text(
-                //   'Option',
-                //   style: TextStyle(fontSize: 20),
-                // ),
-                // CupertinoSwitch(value: value, onChanged: onChanged)
-                Text('Hiragana'),
                 Radio(
                   value: 0,
                   groupValue: provider.selectedOption,
@@ -69,7 +70,8 @@ class _HomeScreenState extends State<HomeScreen> {
                     }
                   },
                 ),
-                Text('Katakana'),
+                Text('Hiragana'),
+
                 Radio(
                   value: 1,
                   groupValue: provider.selectedOption,
@@ -79,7 +81,8 @@ class _HomeScreenState extends State<HomeScreen> {
                     }
                   },
                 ),
-                Text('All'),
+                Text('Katakana'),
+
                 Radio(
                   value: 2,
                   groupValue: provider.selectedOption,
@@ -89,6 +92,63 @@ class _HomeScreenState extends State<HomeScreen> {
                     }
                   },
                 ),
+                Text('All'),
+              ],
+            ),
+
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Text('Duration'),
+              ],
+            ),
+            // ComboBox for duration
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Radio(
+                  value: 5,
+                  groupValue: provider.durationSecond,
+                  onChanged: (int? value) {
+                    if (value != null) {
+                      provider.saveDurationOption(value);
+                    }
+                  },
+                ),
+                Text('5sec'),
+
+                Radio(
+                  value: 10,
+                  groupValue: provider.durationSecond,
+                  onChanged: (int? value) {
+                    if (value != null) {
+                      provider.saveDurationOption(value);
+                    }
+                  },
+                ),
+                Text('10sec'),
+
+                Radio(
+                  value: 30,
+                  groupValue: provider.durationSecond,
+                  onChanged: (int? value) {
+                    if (value != null) {
+                      provider.saveDurationOption(value);
+                    }
+                  },
+                ),
+                Text('30sec'),
+
+                Radio(
+                  value: 60,
+                  groupValue: provider.durationSecond,
+                  onChanged: (int? value) {
+                    if (value != null) {
+                      provider.saveDurationOption(value);
+                    }
+                  },
+                ),
+                Text('60sec'),
               ],
             ),
 
@@ -115,23 +175,32 @@ class WordProvider with ChangeNotifier {
   String _currentWord = "あ : a";
   Timer? _timer;
   static const platform = MethodChannel('com.example.widget/update');
-  Duration _duration = Duration(seconds: 5);
+
   DateTime? _nextUpdateTime;
   final Random _random = Random();
   int _selectedOption = 0;
+  int _durationSecond = 3;
+  Duration _duration = Duration(seconds: 1);
+
+  void updateDuration(int newValue) {
+    _duration = Duration(seconds: newValue);
+  }
 
   WordProvider() {
     _loadWord();
     _startTimer();
-    _loadSelectedOption();
+    loadSelectedOption();
+    loadDurationOption();
   }
 
   String get currentWord => _currentWord;
   int get selectedOption => _selectedOption;
+  int get durationSecond => _durationSecond;
+  Duration get duration => _duration;
 
-  Duration get duration => _nextUpdateTime != null
-      ? _nextUpdateTime!.difference(DateTime.now())
-      : Duration.zero;
+  // Duration get duration => _nextUpdateTime != null
+  //     ? _nextUpdateTime!.difference(DateTime.now())
+  //     : Duration.zero;
 
   void _loadWord() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
@@ -145,12 +214,8 @@ class WordProvider with ChangeNotifier {
   }
 
   void _startTimer() {
-    // _timer = Timer.periodic(Duration(seconds: 7), (timer) {
-    //   _changeWord();
-    // });
-
     _nextUpdateTime = DateTime.now().add(_duration);
-    _timer = Timer.periodic(Duration(seconds: 5), (timer) {
+    _timer = Timer.periodic(Duration(seconds: 1), (timer) {
       if (_nextUpdateTime != null && DateTime.now().isAfter(_nextUpdateTime!)) {
         _changeWord();
         _nextUpdateTime = DateTime.now().add(_duration);
@@ -227,8 +292,10 @@ class WordProvider with ChangeNotifier {
       _currentWord = allWords[idx];
     }
 
-    print(idx);
-    print(_selectedOption);
+    updateDuration(_durationSecond);
+
+    // print(idx);
+    // print(_selectedOption);
 
     _saveWord();
     notifyListeners();
@@ -243,7 +310,7 @@ class WordProvider with ChangeNotifier {
     }
   }
 
-  Future<void> _loadSelectedOption() async {
+  Future<void> loadSelectedOption() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     _selectedOption = prefs.getInt('selectedOption') ?? 0;
     notifyListeners();
@@ -255,6 +322,21 @@ class WordProvider with ChangeNotifier {
     await prefs.setInt('selectedOption', option);
     notifyListeners();
   }
+
+  Future<void> loadDurationOption() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    _durationSecond = prefs.getInt('durationSecond') ?? 3;
+    notifyListeners();
+  }
+
+  Future<void> saveDurationOption(int option) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    _durationSecond = option;
+    await prefs.setInt('durationSecond', option);
+    notifyListeners();
+  }
+
+
 
   @override
   void dispose() {
