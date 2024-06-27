@@ -6,6 +6,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:async';
 import 'package:flutter/services.dart';
 import 'dart:math';
+import 'package:widget_japanese/banner_ad_widget.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -32,6 +33,7 @@ class _HomeScreenState extends State<HomeScreen> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
+            BannerAdWidget(),  //admob
             Consumer<WordProvider>(
               builder: (context, wordProvider, child) {
                 return Column(
@@ -151,6 +153,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 Text('60sec'),
               ],
             ),
+
 
             // Expanded(
             //     child: Text(),

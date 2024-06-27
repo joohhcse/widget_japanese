@@ -3,6 +3,10 @@
         android:label="widget_japanese"
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher">
+        <!-- admop id-->
+        <meta-data
+            android:name="com.google.android.gms.ads.APPLICATION_ID"
+            android:value="ca-app-pub-4116817706973954~8124844821"/>
         <activity
             android:label="일본어 위젯"
             android:name=".MainActivity"
