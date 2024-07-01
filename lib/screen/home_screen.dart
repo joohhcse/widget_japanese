@@ -19,6 +19,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   void initState() {
+
     super.initState();
   }
 
@@ -154,6 +155,50 @@ class _HomeScreenState extends State<HomeScreen> {
               ],
             ),
 
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Text('Text Color'),
+              ],
+            ),
+
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Radio(
+                  value: 0,
+                  groupValue: provider.textColorOption,
+                  onChanged: (int? value) {
+                    if (value != null) {
+                      provider.saveTextColorOption(value);
+                    }
+                  },
+                ),
+                Text('gray'),
+
+                Radio(
+                  value: 1,
+                  groupValue: provider.textColorOption,
+                  onChanged: (int? value) {
+                    if (value != null) {
+                      provider.saveTextColorOption(value);
+                    }
+                  },
+                ),
+                Text('Black'),
+
+                Radio(
+                  value: 2,
+                  groupValue: provider.textColorOption,
+                  onChanged: (int? value) {
+                    if (value != null) {
+                      provider.saveTextColorOption(value);
+                    }
+                  },
+                ),
+                Text('White'),
+              ],
+            ),
 
             // Expanded(
             //     child: Text(),
@@ -184,6 +229,7 @@ class WordProvider with ChangeNotifier {
   int _selectedOption = 0;
   int _durationSecond = 3;
   Duration _duration = Duration(seconds: 1);
+  int _textColorOption = 0;
 
   void updateDuration(int newValue) {
     _duration = Duration(seconds: newValue);
@@ -194,12 +240,14 @@ class WordProvider with ChangeNotifier {
     _startTimer();
     loadSelectedOption();
     loadDurationOption();
+    loadTextColorOption();
   }
 
   String get currentWord => _currentWord;
   int get selectedOption => _selectedOption;
   int get durationSecond => _durationSecond;
   Duration get duration => _duration;
+  int get textColorOption => _textColorOption;
 
   // Duration get duration => _nextUpdateTime != null
   //     ? _nextUpdateTime!.difference(DateTime.now())
@@ -297,6 +345,14 @@ class WordProvider with ChangeNotifier {
 
     updateDuration(_durationSecond);
 
+    if(_textColorOption == 0) {
+      updateWidgetTextColor("#808080"); //gray
+    } else if(_textColorOption == 1) {
+      updateWidgetTextColor("#000000"); //black
+    } else if(_textColorOption == 2) {
+      updateWidgetTextColor("#FFFFFF"); //white
+    }
+
     // print(idx);
     // print(_selectedOption);
 
@@ -310,6 +366,14 @@ class WordProvider with ChangeNotifier {
       await platform.invokeMethod('updateWidget', {"word": _currentWord});
     } on PlatformException catch (e) {
       print("Failed to update widget: '${e.message}'.");
+    }
+  }
+
+  Future<void> updateWidgetTextColor(String color) async {
+    try {
+      await platform.invokeMethod('updateTextColor', {'color': color});
+    } on PlatformException catch (e) {
+      print("Failed to update widget text color: '${e.message}'.");
     }
   }
 
@@ -337,6 +401,27 @@ class WordProvider with ChangeNotifier {
     _durationSecond = option;
     await prefs.setInt('durationSecond', option);
     notifyListeners();
+  }
+
+  Future<void> loadTextColorOption() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    _textColorOption = prefs.getInt('textColorOption') ?? 3;
+    notifyListeners();
+  }
+
+  Future<void> saveTextColorOption(int option) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    _textColorOption = option;
+    await prefs.setInt('textColorOption', option);
+    notifyListeners();
+  }
+
+  Future<void> loadAllOptions() async {
+    await Future.wait([
+      loadSelectedOption(),
+      loadDurationOption(),
+      loadTextColorOption(),
+    ]);
   }
 
 
